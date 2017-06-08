@@ -1,29 +1,33 @@
 env:
   global:
-    - PROJECT_NAME: "mike-test"
-    # master SHA256-0d1103481c30f3b41488722a91e09c56ad6416937799283a41f51b4b5615b779
-    # - secure: ""
-    # beta SHA256-
-install:
-  - wget -O /tmp/phantomjs-netlog.js https://gist.githubusercontent.com/memiux/0e8377f9361fefce64e848e74fa3232c/raw/979a03c6ba2be6ff376c97cf239efe05fbcda1d8/phantomjs-netlog.js
+    - PROJECT_NAME=mike-test
 script:
-  - "find $PWD -path */public_html/includes/templates/litecart.catalog/* -type f -name *.html | xargs --no-run-if-empty -I{} phantomjs --ignore-ssl-errors=true --ssl-protocol=any /tmp/phantomjs-netlog.js file://{}"
+  - true
 notifications:
   email: false
-  slack: krrrunch:Heq9HQZoEZT9rZJohu8in30e
 language: node_js
 node_js:
-  - "5.1"
+  - "6"
 before_deploy:
-  - "wget -O /tmp/git-ftp https://raw.githubusercontent.com/git-ftp/git-ftp/1.2.0/git-ftp && chmod +x /tmp/git-ftp"
-  - 'GIT_FTP_URL_BRANCH=GIT_FTP_URL_$TRAVIS_BRANCH && /tmp/git-ftp add-scope $TRAVIS_BRANCH "${!GIT_FTP_URL_BRANCH}"'
-  - git config git-ftp.syncroot public_html
+  - 'git config --global user.email "deploy@travis-ci"'
+  - 'git config --global user.name "[Deploy]"'
+  - export GIT_FTP_URL_BRANCH=GIT_FTP_URL_$TRAVIS_BRANCH
+  - './git-ftp add-scope $TRAVIS_BRANCH "${!GIT_FTP_URL_BRANCH}"'
+  - git config git-ftp.syncroot public
+  - npm install -g uglify-js
+  - gem install sass-3.4.23.gem --no-ri --no-rdoc
+  - gem install dpl-1.8.32.gem --no-ri --no-rdoc
+  # - ./git-ftp catchup -s $TRAVIS_BRANCH -v
+  - 'FTP_URL="${!GIT_FTP_URL_BRANCH}" ./koi build -e local'
+  # - git commit -m deploy --all
 deploy:
   - provider: script
-    script: /tmp/git-ftp push -s $TRAVIS_BRANCH -v
+    script: ./git-ftp push -s $TRAVIS_BRANCH -v -f
+    skip_cleanup: true
     on:
       branch: master
-  # - provider: script
-  #   script: /tmp/git-ftp push -s $TRAVIS_BRANCH -v
-  #   on:
-  #     branch: beta
+  - provider: script
+    script: ./git-ftp push -s $TRAVIS_BRANCH -v -f
+    skip_cleanup: true
+    on:
+      branch: beta
