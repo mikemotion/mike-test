@@ -1,0 +1,29 @@
+env:
+  global:
+    - PROJECT_NAME: "mike-test"
+install:
+  - npm install -g csslint htmlhint
+  - wget -O /tmp/phantomjs-netlog.js https://git.io/voZ04
+script:
+  - "find $PWD -path */public_html/includes/templates/$PROJECT_NAME.catalog/* -type f -name k-*.css -size +1c | xargs --no-run-if-empty csslint"
+  - "find $PWD -path */public_html/includes/templates/$PROJECT_NAME.catalog/* -type f -name *.html -size +1c | xargs --no-run-if-empty htmlhint"
+  - "find $PWD -path */public_html/includes/templates/$PROJECT_NAME.catalog/* -type f -name *.html | xargs --no-run-if-empty -I{} phantomjs --ignore-ssl-errors=true --ssl-protocol=any /tmp/phantomjs-netlog.js file://{}"
+notifications:
+  email: false
+  slack: krrrunch:Heq9HQZoEZT9rZJohu8in30e
+language: node_js
+node_js:
+  - "5.1"
+before_deploy:
+  - "wget -O /tmp/git-ftp https://raw.githubusercontent.com/git-ftp/git-ftp/1.2.0/git-ftp && chmod +x /tmp/git-ftp"
+  - 'GIT_FTP_URL_BRANCH=GIT_FTP_URL_$TRAVIS_BRANCH && /tmp/git-ftp add-scope $TRAVIS_BRANCH "${!GIT_FTP_URL_BRANCH}"'
+  - git config git-ftp.syncroot public_html
+deploy:
+  - provider: script
+    script: /tmp/git-ftp push -s $TRAVIS_BRANCH -v
+    on:
+      branch: master
+  # - provider: script
+  #   script: /tmp/git-ftp push -s $TRAVIS_BRANCH -v
+  #   on:
+  #     branch: beta
