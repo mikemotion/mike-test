@@ -1,9 +1,13 @@
 env:
   global:
     - PROJECT_NAME: "mike-test"
+    # master SHA256-0d1103481c30f3b41488722a91e09c56ad6416937799283a41f51b4b5615b779
+    # - secure: ""
+    # beta SHA256-
+    - secure: "eFZq3v1ab8D84cagpL4aIKNIh8jlmfDSLHgeYem6DM18P/DmBRChBCg2yxmeZF23lxrTtEdQOlaVI+mHTGGEGnxA7Px+gDXfUdBV2zNaEHYueMru/HZwWQXcO4fYUOLipidRtR7g62CtTaUdIwJJORZk+LDDz9nMiyrhgnshHOIQvCDANW5VP0aPULB/VvL1vJleulT9HA42u24pFePMqYewWdZxaCwcAn76edIuqc22MFYWu5jX9QZidUQQXBa56JTVdvFvM2d2w7yFR1Pj+p+jmn9WAW5gegls18B3lWGEDMYgE9h7nrOoKJWGoaoW2vGnbnLpkG+FDpVd/CehEwSfdvHQWRmCa+w3PdD1jXXksVWEYX9kvPABvChO6FxgCMPUwu8lFLAcc7zI1xyQQC4EbtcliobeTV6G5tnFOIGRN2sX0oQDnkbq6762ZUeDH7FlfqTBBbJMpt/HqHYRb06CvujCFWBao7ienQYfumEmNpRWaX5clD1j5haUxTxXkjPNWiaKGLPdCz2hEUt1BdYLAW8ThXRuNeJDKtKKgLuP1ULQadTsKukJEWRwCQ2ouzI4xZiytz5EU0Tt7aDumQkY15ha0Nhv+BGbAHFiCW98RVW3xZZYFBEQpH9YnmQ1yQtyOEzSdDBVkmP+zkYGjahj04znj7N691QeiEfPuM8="
 install:
   - npm install -g csslint htmlhint
-  - wget -O /tmp/phantomjs-netlog.js https://git.io/voZ04
+  - wget -O /tmp/phantomjs-netlog.js https://gist.githubusercontent.com/memiux/0e8377f9361fefce64e848e74fa3232c/raw/979a03c6ba2be6ff376c97cf239efe05fbcda1d8/phantomjs-netlog.js
 script:
   - "find $PWD -path */public_html/includes/templates/$PROJECT_NAME.catalog/* -type f -name k-*.css -size +1c | xargs --no-run-if-empty csslint"
   - "find $PWD -path */public_html/includes/templates/$PROJECT_NAME.catalog/* -type f -name *.html -size +1c | xargs --no-run-if-empty htmlhint"
